@@ -1,0 +1,60 @@
+---
+title: "R for Data Science (Hadley Wickham) - Chapter 7 Exercises"
+output: html_document
+---
+
+```{r setup, include=TRUE}
+library(tidyverse)
+library(nycflights13)
+```
+
+
+
+## 7.3.4 Exercises
+#####Explore the distribution of each of the x, y, and z variables in diamonds. What do you learn? Think about a diamond and how you might decide which dimension is the length, width, and depth.
+```{r 734a, include=TRUE}
+
+ggplot(diamonds) +
+  geom_freqpoly(aes(x=x), color = "red", binwidth = 1) +
+  geom_freqpoly(aes(x=y), color = "blue", binwidth = 1) +
+  geom_freqpoly(aes(x=z), color = "green", binwidth = 1)
+
+```
+
+* When looking at a diamond from the top, the length and the width are the same
+* X and Y have nearly identical distribution so must 
+
+#####Explore the distribution of price. Do you discover anything unusual or surprising? (Hint: Carefully think about the binwidth and make sure you try a wide range of values.)
+
+```{r 734b, include=TRUE}
+ggplot(diamonds) +
+  geom_histogram(aes(x=price), binwidth = 10) +
+  coord_cartesian(xlim=c(1000,3000))
+```
+
+* There's a gap near $1500, no idea why
+
+#####How many diamonds are 0.99 carat? How many are 1 carat? What do you think is the cause of the difference?
+```{r 734c, include=TRUE}
+diamonds %>% 
+  filter(between(carat,0.98,1.01)) %>%
+  count(carat)
+```
+
+* There are 23 at 0.99 carats and 1558 at 1.0 carats
+* Measurements are biased towards exceeding 1.00 carats for price reasons
+
+#####Compare and contrast coord_cartesian() vs xlim() or ylim() when zooming in on a histogram. What happens if you leave binwidth unset? What happens if you try and zoom so only half a bar shows?
+```{r 734d, include=TRUE}
+ggplot(diamonds) +
+  geom_histogram(aes(x=price)) +
+  xlim(1000,3000)
+```
+
+* The plot updates defaults to act on the specific range
+* Think of it as filtering with dplyr and plotting the filtered data, instead of zooming in on a plot of all data
+
+
+```{r 734d, include=TRUE}
+
+```
