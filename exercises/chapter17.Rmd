@@ -1,0 +1,66 @@
+---
+title: "R for Data Science (Hadley Wickham) - Chapter 17 Exercises"
+output: html_document
+---
+
+## 17 Intro Exercises
+### Write For Loops to 
+####a Compute the mean of every column in mtcars
+```{r 171a, include=TRUE}
+means <- vector("double", length(mtcars))
+for (i in seq_along(mtcars)){
+  means[[i]] <- mean(mtcars[[i]])
+}
+means
+```
+
+####b Determine the type of each column in nycfilghts13::flights
+```{r 171b, include=TRUE}
+types <- vector("character", length(nycflights13::flights))
+for (i in seq_along(nycflights13::flights)){
+  types[[i]] <- typeof(nycflights13::flights[[i]])
+}
+types
+```
+
+####c Compute the number of unique values in each column of iris.
+```{r 171c, include=TRUE}
+vals <- vector("integer", length(iris))
+for (i in seq_along(iris)){
+  vals[[i]] <- dplyr::n_distinct(iris[[i]])
+}
+vals
+```
+
+####d Generate 10 random normals for each of Mu = -10, 0, 10, and 100. Think about the output, sequence, and body before you start writing the loop.
+```{r 171d, include=TRUE}
+# Output will be vector of 4 lists of 10 doubles
+# Sequence is along a manually inputted list of Mus
+# Body just generates a list of 10 randoms
+mus <- c(-10, 0, 10, 100)
+output <- vector("list", length(mus))
+for (i in seq_along(mus)){
+  output[[i]] <- rnorm(10,mus[[i]])
+}
+output
+```
+
+####2 Do the previous 4 for loops with purrr::map_* instead
+```{r 172, include=TRUE}
+library(tidyverse)
+means <- mtcars %>%
+  map_dbl(mean)
+means
+
+types <- nycflights13::flights %>%
+  map_chr(typeof)
+types
+
+vals <- iris %>%
+  map_int(n_distinct)
+vals
+
+output <- c(-10, 0, 10, 100) %>%
+  map(rnorm,n=10)
+output
+```
