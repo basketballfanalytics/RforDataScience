@@ -1,0 +1,386 @@
+---
+title: "R for Data Science (Hadley Wickham) - Chapter 3 Exercises"
+output: html_document
+---
+
+```{r setup, include=TRUE}
+library(tidyverse)
+```
+
+## 3.2.4 Exercises
+```{r 324, include=TRUE}
+# 1
+ggplot(mpg)
+# We see nothing because there are no aesthetics
+
+# 2
+nrow(mpg)
+ncol(mpg)
+
+# 3
+# The drive of the car
+
+# 4
+ggplot(mpg,aes(y=hwy,x=cyl)) + 
+  geom_point()
+
+# 5
+ggplot(mpg,aes(y=class,x=drv)) + 
+  geom_point()
+
+# There are many points in the same positions, so not all data points are visible
+
+```
+
+
+## 3.3.1 Exercises
+```{r 331, include=TRUE}
+# 1
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = "blue"))
+
+# Aesthetics take variables as inputs
+# In the above code, R creates an equal length vector of strings values (all = "blue")
+#   ggplot colors the points based on the factor levels of the color vector of strings
+#   there is only one level ("blue") so all the points have the same color
+
+# We need to manually assign color = "blue" outside of the aesthetic mapping
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
+
+# Note also that the legend no longer appears to indicate the color definitions
+#   there are no implied meanings to the colors now, the points are simply blue
+
+# 2
+# categoricals: manufacturer, model, trans, drv, fl, class
+# continuous: displ, year, cyl, cty, hwy
+
+# displ, year, cyl could all be considered categorical as well
+
+mpg
+str(mpg)
+
+
+# 3
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = cty))
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, size = cty))
+
+# ggplot(data = mpg) + 
+#   geom_point(mapping = aes(x = displ, y = hwy, shape = cty))
+
+# When mapping a continuous variable to color and size, gpplot handles them well
+#   ggplot seems to treat these variables as ordered factors with many levels
+#   color is not assigned randomly to factor levels, but has a light/dark scale
+
+# Mapping a continuous variable to a shape throws an error
+#   there is no good way to present continuous data as shapes
+
+
+# 4
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = hwy, y = hwy, size = hwy, color = hwy))
+
+# The variables just show up in multiple aesthetics
+
+# 5
+?geom_point
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, fill=cty), color = "blue", shape = 21, stroke = 2)
+
+# Stroke sets the width of the line that draws the point geoms
+
+
+# 6
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = displ < 5))
+
+# R coerces the given info to a vector that fits the plot format
+#   In this case we get a logical vector
+
+```
+
+## 3.5.1 Exercises
+```{r 351, include=TRUE}
+# 1
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_wrap(~cty)
+
+# ggplot converts the continuous to a categorical
+
+
+# 2
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(drv~cyl)
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = drv, y = cyl))
+
+# They mean there are no data points with those combination of categories
+#   e.g. there are no Rear wheel drive (R) cars with 4 cylinders
+
+
+# 3
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(drv ~ .)
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(. ~ cyl)
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_wrap(~drv, nrow = 3)
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_wrap(~ cyl, nrow = 1)
+
+# The . means to facet across all groups on the grid
+#   The results are effectively the same as facet_wrap, but with cosmetic differences
+
+
+# 4
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_wrap(~ class, nrow = 2)
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = class))
+
+# Color Plot:
+#   Easier to compare points from different classes
+#   Easier to understand which points are outliers, which classes are unusual
+
+# Facet plot:
+#   Easier to see trends within classes
+
+# As the data points increase, the color plot will become difficult to interpret
+
+
+# 5 
+# nrow and ncol determine the number of rows/cols in a facet_wrap plot
+# These are implied by the dimensions of the variables given in facet_grid
+
+
+# 6
+# Screens are typically wider than they are tall, so the plot will probably look better
+
+```
+
+
+## 3.6.1 Exercises
+```{r 361, include=TRUE}
+# 1
+?geom_line
+?geom_boxplot
+?geom_histogram
+?geom_area
+
+
+# 2
+# Scatter plot of hwy ~ displ colored by the drv
+#   also a line for each drv showing the mean trend, without error bars
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) + 
+  geom_point() + 
+  geom_smooth(se = FALSE)
+
+# 3
+# show.legend = FALSE suppresses the legend, if you remove it returns to it's default value TRUE
+#   Hadley suppressed the legend earlier because the graphs were already very small
+
+# 4
+# It's a TRUE/FALSE that determines whether the error bars show up
+
+# 5
+# They are equivalent
+# The data and mapping declared in the initial ggplot statement passes down to the geoms
+
+# 6
+ggplot(data = mpg, aes(y = hwy, x = displ)) + 
+  geom_point() + 
+  geom_smooth(se=FALSE)
+
+# You need to have read the chapter to know drv is the group variable below
+ggplot(data = mpg, aes(y = hwy, x = displ, group = drv)) + 
+  geom_point() + 
+  geom_smooth(se=FALSE)
+
+# Note that you could also apply the group aesthetic to geom_smooth because it makes no difference for geom_point()
+
+ggplot(data = mpg, aes(y = hwy, x = displ, color = drv)) + 
+  geom_point() + 
+  geom_smooth(se=FALSE)
+
+ggplot(data = mpg, aes(y = hwy, x = displ)) + 
+  geom_point(aes(color = drv)) + 
+  geom_smooth(se=FALSE)
+
+ggplot(data = mpg, aes(y = hwy, x = displ)) + 
+  geom_point(aes(color = drv)) + 
+  geom_smooth(aes(linetype = drv), se=FALSE)
+
+ggplot(data = mpg, aes(y = hwy, x = displ)) + 
+  geom_point(aes(fill = drv), shape = 21, color = "white", stroke = 2)
+
+
+
+```
+
+
+## 3.7.1 Exercises
+```{r 371, include=TRUE}
+# 1
+?stat_summary
+# geom = "pointrange"
+?geom_pointrange
+
+ggplot(data = diamonds) + 
+  geom_pointrange(
+    mapping = aes(x = cut, y = depth),
+    stat = "summary",
+    fun.ymin = min,
+    fun.ymax = max,
+    fun.y = median
+  )
+
+# 2
+?geom_col
+
+# I bleieve that geom_col() is equivalent to geom_bar(stat = "identity")
+# There might be more to it than that
+
+# 3
+# Not really sure of the answer here. The geom-stat pairs always have the same default position?
+
+# 4
+?stat_smooth
+# This is basically just asking to look at the help
+
+# 5 
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, y = ..prop..))
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = color, y = ..prop..))
+
+# In the preceding charts, the proportions are computed across the individual categories
+
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, y = ..prop.., group = 1))
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = color))
+
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, group = 1, fill = color, y = ..prop..))
+
+# Note that the last chart doesn't work, it is the same as the preceding chart
+#   When we didn't
+
+```
+
+
+## 3.8.1 Exercises
+```{r 381, include=TRUE}
+# 1
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + 
+  geom_point()
+
+# The points are overlapping, improve by jittering
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + 
+  geom_jitter()
+
+# 2
+?geom_jitter
+# height and width
+
+# 3
+?geom_count
+
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + 
+  geom_count()
+
+# geom_count() shows overlapping points as larger points
+#   this seems generally better than geom_jitter to me
+#   I'm not sure when geom_jitter is better
+
+
+# 4
+?geom_boxplot
+
+# the default position is dodge
+ggplot(mpg, aes(x=drv, y=cty)) +
+  geom_boxplot()
+
+ggplot(mpg, aes(x=drv, y=cty, group = class)) +
+  geom_boxplot()
+
+# Here we have the boxplots of city mpg grouped by the class variable
+#   It is trying to make a box for each for each combination of drv+class
+#   It throws a warning because the boxes overlap horizontally, which is ugly
+
+```
+
+
+## 3.9.1 Exercises
+```{r 391, include=TRUE}
+# 1
+# stacked bar
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = color))
+
+# I guess this what Mr. Wickham means
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = color)) +
+  coord_polar()
+
+# 2 
+?labs
+
+# allows for manual labelling of axes
+
+
+ # 3
+?coord_map
+?coord_quickmap
+# coor_map adjusts plotted latitude/longitude data to account for the spherical shape of the earth
+#   the space between latitudes is much larger at the equator than at the poles
+#   coord_quickmap uses an approximation that is much faster but is less accurate, especially near the poles
+
+# 4
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+  geom_point() + 
+  geom_abline() +
+  coord_fixed()
+
+# geom_fixed forces a specific ratio of y~x in the graph
+#   the default ratio=1 doesnt show us much in this graph
+#   to understand better, set the ratio to 5 or to 0.2
+#   By default, ggplot choose a coordinate ratio based upon the ranges of x and y
+
+# abline just adds a straight line to the graph
+#   This is useful for annotations and calling out trends
+#   No parameters are passed so the abline defaults to y = x
+
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+  geom_point() + 
+  geom_abline() +
+  coord_fixed(ratio = 5)
+
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+  geom_point() + 
+  geom_abline() +
+  coord_fixed(ratio = 0.2)
+
+
+```
